@@ -35,9 +35,10 @@ Largura
 #define WIDTH 100
 #define HEIGHT 100
 
-int image[HEIGHT][WIDTH][3]; // Array com 3 indices de  R, G, B para matriz da imagem.
+int image[HEIGHT][WIDTH][3]; // Array global altura e largura com 3 indices de  R, G, B para matriz da imagem.
 
 void initialize_image(int r, int g, int b) {
+    /*Função para inicializar a imagem ppm, pintando com a cor atribuida*/
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
             image[i][j][0] = r;
@@ -49,6 +50,7 @@ void initialize_image(int r, int g, int b) {
 }
 
 void changes_value_pixel(int p1, int p2, int r, int g, int b) {
+    /*Função para alterar um pixel especifico*/
     if (p1 >= 0 && p1 < HEIGHT && p2 >= 0 && p2 < WIDTH) {
         image[p1][p2][0] = r;
         image[p1][p2][1] = g;
@@ -58,6 +60,7 @@ void changes_value_pixel(int p1, int p2, int r, int g, int b) {
     }} 
 
 void print_image_ppm() {
+    /*Função que imprime a imagem ppm*/
         printf("P3\n %d \t %d\n 255\n", WIDTH, HEIGHT);
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
@@ -68,14 +71,14 @@ void print_image_ppm() {
     }
 
 void fuction_of_save_image_ppm(char *name_file){
+    /*Função para Salvar Imagem PPM em Arquivo*/
         FILE *file = fopen(name_file, "w");
         if (file == NULL){
             printf("Erro ao criar o arquivo!\n");
             return;
         } 
     
-        // Cabeçalho correto
-        fprintf(file, "P3\n%d %d\n255\n", WIDTH, HEIGHT);
+        fprintf(file, "P3\n %d \t %d\n 255\n", WIDTH, HEIGHT);
     
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
