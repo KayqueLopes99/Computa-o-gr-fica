@@ -91,6 +91,7 @@ void fuction_of_save_image_ppm(char *name_file){
     }
 
 void draw_image_with_t(int r, int g, int b, int bar_width, int leg_height) {
+    /*Função para centralização do T na imagem.=\*/
     
     initialize_image(0,0,0);
 
