@@ -8,12 +8,16 @@ void setpixel (int x, int y, unsigned char r, unsigned char g, unsigned char b){
     img [x][y][1] = g;
     img [x][y][2] = b;
 }
-void clearImg(){
-    for (int i = 0; i<h; i++)
-        for (int j =0; j<w;j++)
-            for (int c=0;c<3;c++)
-                img[i][j][c]= 255;
+void clearImg() {
+    for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++) {
+            img[i][j][0] = 173;  // R
+            img[i][j][1] = 216;  // G
+            img[i][j][2] = 230;  // B
+        }
 }
+
+
 void saveImg(){
     printf("P3\n%d %d\n255\n", w, h);  
     for (int i = 0; i < h; i++) {
@@ -88,14 +92,23 @@ void draw_image_with_colors(unsigned char r, unsigned char g, unsigned char b) {
         }
     }
 
+    for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++) {
+            if (i >= 192){
+            img[i][j][0] = 190;  // R
+            img[i][j][1] = 255;  // G
+            img[i][j][2] = 190;  // B
+        }
+    }
+
     // Telhado com linhas vermelhas de (64,j) a (0,128)
-    drawLine(64, 64, 0, 128, 255, 0, 0);  
-    drawLine(64, 192, 0, 128, 255, 0, 0);
-    drawLine(64, 84, 0, 128, 255, 0, 0);
-    drawLine(64, 104, 0, 128, 255, 0, 0);
-    drawLine(64, 128, 0, 128, 255, 0, 0);
-    drawLine(64, 152, 0, 128, 255, 0, 0);
-    drawLine(64, 172, 0, 128, 255, 0, 0);
+    drawLine(64, 64, 10, 128, 255, 0, 0);  
+    drawLine(64, 192, 10, 128, 255, 0, 0);
+    drawLine(64, 84, 10, 128, 255, 0, 0);
+    drawLine(64, 104, 10, 128, 255, 0, 0);
+    drawLine(64, 128, 10, 128, 255, 0, 0);
+    drawLine(64, 152, 10, 128, 255, 0, 0);
+    drawLine(64, 172, 10, 128, 255, 0, 0);
 
     // Desenhar a porta 
     int door_top_i = h / 2;   // Topo da po
@@ -130,11 +143,23 @@ void draw_image_with_colors(unsigned char r, unsigned char g, unsigned char b) {
             img[i][door_right_j][2] = b;
         }
     }
+
+    for (int j = 0; j <= 256; j++) {
+        if (j >= 0 && j < w) {
+            img[192][j][0] = r;
+            img[192][j][1] = g;
+            img[192][j][2] = b;
+        }
+    }
+    
+
+
+
+
+
+
+
 }
-
-
-
-
 int main (void){
     clearImg();
     //drawLine((int) h/2,(int) w/2, h-1, w-1,255,0,0);
