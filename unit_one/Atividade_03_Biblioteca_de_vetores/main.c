@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "vetores.h"
 
-
 int main() {
     // Questão 1
     printf("\033[1;30mQuestao 1\033[0m\n");
@@ -52,5 +51,4 @@ int main() {
 
     return 0;
 }
-
 // compilação: gcc main.c funcoes_vetoriais.c -o programa  ./programa
