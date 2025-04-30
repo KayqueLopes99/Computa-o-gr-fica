@@ -149,8 +149,12 @@ void produto_vetorial_3d(int x1, int y1, int z1, int x2, int y2, int z2) {
 
 /*Calcula o produto vetorial (escalar) entre vetores 2D.*/
 void produto_vetorial_2d(int x1, int y1, int x2, int y2) {
-    int resultado = x1 * y2 - y1 * x2;
-    printf("\033[1;31mO produto vetorial (escalar) entre <%d, %d> e <%d, %d>\033[0m: %d\n",
-           x1, y1, x2, y2, resultado);
+    int z1 = 0;
+    int z2 = 0; 
+    
+    // como os pontos são (x, y) o vetor resultante será (0,0,zk)
+    int resultado_x = y1 * z2 - z1 * y2;
+    int resultado_y = z1 * x2 - x1 * z2;
+    int resultado_z = x1 * y2 - y1 * x2;   
+    printf("\033[1;31mO produto vetorial (escalar) entre <%d, %d> e <%d, %d>\033[0m: <%d , %d, %d>\n", x1, y1, x2, y2, resultado_x, resultado_y, resultado_z);
 }
-
