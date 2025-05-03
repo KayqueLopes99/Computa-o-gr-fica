@@ -3,6 +3,13 @@
 #define w 256
 
 unsigned char img [h][w][3];
+
+
+
+
+
+
+
 void setpixel (int x, int y, unsigned char r, unsigned char g, unsigned char b){
     img [x][y][0] = r;
     img [x][y][1] = g;
