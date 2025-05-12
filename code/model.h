@@ -32,20 +32,13 @@ typedef struct {
 } Face;
 
 extern unsigned char image[HEIGHT][WIDTH][3];
-
 void set_pixel(int x, int y, unsigned char r, unsigned char g, unsigned char b);
-
 void clr();
-
 void save();
-
 void draw_line(int x0, int y0, int x1, int y1);
-
 int load_obj(const char *filename, Vertex *vertices, int *vcount, Face *faces, int *fcount);
-
 void resizing( Vertex v0, Vertex v1 );
-
 void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount);
-
-
+void apply_transformations(Vertex *vertices, int vcount, Vertex centro, float sx, float sy, float sz, char eixo, int angulo, float s_x);
+Vertex apply_scale(Vertex p, Vertex centro, float sx, float sy, float sz);
 #endif

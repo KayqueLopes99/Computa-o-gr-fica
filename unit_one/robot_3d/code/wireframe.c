@@ -18,9 +18,9 @@ int main()
     }
 
     // Desenha as faces do modelo na imagem
-    // render_faces(vertices, faces, vcount, fcount);
+    render_faces(vertices, faces, vcount, fcount);
 
-    render_point_cloud(vertices, vcount);
+    //render_point_cloud(vertices, vcount);
 
 
     save();

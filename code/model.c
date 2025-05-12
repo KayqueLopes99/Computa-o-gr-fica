@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#define PI 3.14159265358979323846
 
 #include "model.h"
 unsigned char image[HEIGHT][WIDTH][3];
@@ -33,7 +34,7 @@ void set_pixel(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 
 void draw_line(int x0, int y0, int x1, int y1) {
   for (float t = 0.0; t < 1.0; t = t + 0.0001)
-    set_pixel((int)x0+(x1-x0)*t, (int)y0+(y1-y0)*t, 0, 0, 0);
+    set_pixel((int)x0+(x1-x0)*t, (int)y0+(y1-y0)*t, 55, 50, 255);
 }
 
 void clr()
@@ -41,7 +42,7 @@ void clr()
     for (int i = 0; i < WIDTH; i++)
         for (int j = 0; j < HEIGHT; j++)
             for (int c = 0; c < 3; c++)
-                image[i][j][c] = 255;
+                image[i][j][c] = 0;
 }
 
 void save()
@@ -123,8 +124,6 @@ void resizing( Vertex v0, Vertex v1 ){
   draw_line(x0, y0, x1, y1);
 }
 
-
-
 void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount)
 {
     for (int i = 0; i < fcount; i++)
@@ -135,6 +134,93 @@ void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount)
             Vertex v0 = vertices[face.verts[j] - 1];
             Vertex v1 = vertices[face.verts[(j + 1) % face.n] - 1];
             resizing(v0, v1);
-        }
+        }}}
+
+Vertex apply_scale(Vertex p, Vertex centro, float sx, float sy, float sz)
+{
+    Vertex result;
+    float x = p.x - centro.x;
+    float y = p.y - centro.y;
+    float z = p.z - centro.z;
+
+    float x1 = sx * x;
+    float y1 = sy * y;
+    float z1 = sz * z;
+
+    result.x = x1 + centro.x;
+    result.y = y1 + centro.y;
+    result.z = z1 + centro.z;
+
+    return result;
+}
+
+Vertex apply_rotation(Vertex p, Vertex centro, int angulo, char eixo)
+{
+    Vertex result;
+    float rad = -angulo * PI / 180.0f; // Atenção: use M_PI da math.h
+
+    float x = p.x - centro.x;
+    float y = p.y - centro.y;
+    float z = p.z - centro.z;
+
+    switch (eixo)
+    {
+    case 'x':
+        result.x = x;
+        result.y = cos(rad) * y - sin(rad) * z;
+        result.z = sin(rad) * y + cos(rad) * z;
+        break;
+
+    case 'y':
+        result.x = cos(rad) * x + sin(rad) * z;
+        result.y = y;
+        result.z = -sin(rad) * x + cos(rad) * z;
+        break;
+
+    case 'z':
+        result.x = cos(rad) * x - sin(rad) * y;
+        result.y = sin(rad) * x + cos(rad) * y;
+        result.z = z;
+        break;
+
+    default:
+        result = p;
+        break;
+    }
+
+    result.x += centro.x;
+    result.y += centro.y;
+    result.z += centro.z;
+
+    return result;
+}
+
+Vertex apply_reflection(Vertex p, int p1, int p2, int p3, Vertex centro)
+{
+    Vertex refletido;
+    refletido.x = centro.x + (p.x - centro.x) * p1;
+    refletido.y = centro.y + (p.y - centro.y) * p2;
+    refletido.z = centro.z + (p.z - centro.z) * p3;
+    return refletido;
+}
+
+Vertex shear(Vertex p, float s_x)
+{
+    Vertex result;
+
+    result.x = p.x + s_x * p.y;
+    result.y = p.y;
+    result.z = p.z;
+
+    return result;
+}
+void apply_transformations(Vertex *vertices, int vcount, Vertex centro, float sx, float sy, float sz, char eixo_rotacao, int angulo, float s_x) {
+    for (int i = 0; i < vcount; i++) {
+        vertices[i] = apply_scale(vertices[i], centro, sx, sy, sz);
+        vertices[i] = apply_rotation(vertices[i], centro, angulo, eixo_rotacao);
+        vertices[i] = apply_reflection(vertices[i], -1, 1, 1, centro);
+        vertices[i] = apply_reflection(vertices[i], 1, -1, 1, centro);
+        vertices[i] = apply_reflection(vertices[i], 1, 1, -1, centro);
+        vertices[i] = shear(vertices[i], s_x);
     }
 }

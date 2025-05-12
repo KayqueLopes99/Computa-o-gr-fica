@@ -70,19 +70,44 @@ Ponto apply_scale(Ponto p, Ponto centro, float sx, float sy)
     return result;
 }
 
-Ponto rotation(Ponto p, Ponto centro, int angulo)
+Ponto3D rotation3D(Ponto3D p, Ponto3D centro, int angulo, char eixo)
 {
-    Ponto result;
+    Ponto3D result;
     float rad = -angulo * PI / 180.0;
 
     float x = p.x - centro.x;
     float y = p.y - centro.y;
+    float z = p.z - centro.z;
 
-    float x1 = cos(rad) * x - sin(rad) * y;
-    float y1 = sin(rad) * x + cos(rad) * y;
+    switch (eixo)
+    {
+    case 'x': 
+        result.x = x;
+        result.y = cos(rad) * y - sin(rad) * z;
+        result.z = sin(rad) * y + cos(rad) * z;
+        break;
 
-    result.x = x1 + centro.x;
-    result.y = y1 + centro.y;
+    case 'y': 
+        result.x = cos(rad) * x + sin(rad) * z;
+        result.y = y;
+        result.z = -sin(rad) * x + cos(rad) * z;
+        break;
+
+    case 'z': 
+        result.x = cos(rad) * x - sin(rad) * y;
+        result.y = sin(rad) * x + cos(rad) * y;
+        result.z = z;
+        break;
+
+    default:
+        result = p; 
+        break;
+    }
+
+    
+    result.x += centro.x;
+    result.y += centro.y;
+    result.z += centro.z;
 
     return result;
 }
@@ -95,8 +120,8 @@ Ponto reflection(Ponto p, int p1, int p2, Ponto centro)
     return refletido;
 }
 
-
-Ponto shear(Ponto p, float s_x) { 
+Ponto shear(Ponto p, float s_x)
+{
     Ponto result;
 
     result.x = p.x + s_x * p.y;
@@ -104,9 +129,6 @@ Ponto shear(Ponto p, float s_x) {
 
     return result;
 }
-
-
-
 
 void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsigned char b, Ponto centro, float sx, float sy, int angulo, int s_x)
 {
@@ -130,22 +152,41 @@ void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsi
     for (int i = 0; i < 4; i++)
     {
         base[i] = apply_scale(base[i], centro, sx, sy);
-        base[i] = rotation(base[i], centro, angulo);
+        Ponto3D temp3D = {base[i].x, base[i].y, 0};
+        Ponto3D centro3D = {centro.x, centro.y, 0};
+
+        temp3D = rotation3D(temp3D, centro3D, angulo, 'z');
+
+        base[i].x = temp3D.x;
+        base[i].y = temp3D.y;
+
         base[i] = shear(base[i], s_x);
     }
     for (int i = 0; i < 3; i++)
     {
         teto[i] = apply_scale(teto[i], centro, sx, sy);
-        teto[i] = rotation(teto[i], centro, angulo);
-        teto[i] = shear(teto[i], s_x);
+        Ponto3D temp3D = {teto[i].x, teto[i].y, 0};
+        Ponto3D centro3D = {centro.x, centro.y, 0};
 
+        temp3D = rotation3D(temp3D, centro3D, angulo, 'z');
+
+        teto[i].x = temp3D.x;
+        teto[i].y = temp3D.y;
+        teto[i] = shear(teto[i], s_x);
     }
     for (int i = 0; i < 4; i++)
     {
         porta[i] = apply_scale(porta[i], centro, sx, sy);
-        porta[i] = rotation(porta[i], centro, angulo);
-        porta[i] = shear(porta[i], s_x);
 
+        Ponto3D temp3D = {porta[i].x, porta[i].y, 0};
+        Ponto3D centro3D = {centro.x, centro.y, 0};
+
+        temp3D = rotation3D(temp3D, centro3D, angulo, 'z');
+
+        porta[i].x = temp3D.x;
+        porta[i].y = temp3D.y;
+
+        porta[i] = shear(porta[i], s_x);
     }
 
     float offsetX = origem.x - base[0].x;
@@ -167,14 +208,11 @@ void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsi
         porta[i].y += offsetY;
     }
 
-    
-
     // --- REFLEXÕES ---
     // 4. Gera reflexões com base na figura transformada
     Ponto base_y[4], teto_y[3], porta_y[4];
     Ponto base_x[4], teto_x[3], porta_x[4];
     Ponto base_o[4], teto_o[3], porta_o[4];
-
 
     for (int i = 0; i < 4; i++)
     {
@@ -206,10 +244,11 @@ void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsi
     start_drawing_lines(teto[1], teto[2]);
     start_drawing_lines(teto[2], teto[0]);
 
-   // 6. Desenha reflexões
+    // 6. Desenha reflexões
 
     // Reflexão no eixo Y
-    for (int i = 0; i < 4; i++) start_drawing_lines(base_y[i], base_y[(i + 1) % 4]);
+    for (int i = 0; i < 4; i++)
+        start_drawing_lines(base_y[i], base_y[(i + 1) % 4]);
     start_drawing_lines(teto_y[0], teto_y[1]);
     start_drawing_lines(teto_y[1], teto_y[2]);
     start_drawing_lines(teto_y[2], teto_y[0]);
@@ -218,7 +257,8 @@ void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsi
     start_drawing_lines(porta_y[2], porta_y[3]);
 
     // Reflexão no eixo X
-    for (int i = 0; i < 4; i++) start_drawing_lines(base_x[i], base_x[(i + 1) % 4]);
+    for (int i = 0; i < 4; i++)
+        start_drawing_lines(base_x[i], base_x[(i + 1) % 4]);
     start_drawing_lines(teto_x[0], teto_x[1]);
     start_drawing_lines(teto_x[1], teto_x[2]);
     start_drawing_lines(teto_x[2], teto_x[0]);
@@ -227,7 +267,8 @@ void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsi
     start_drawing_lines(porta_x[2], porta_x[3]);
 
     // Reflexão na origem
-    for (int i = 0; i < 4; i++) start_drawing_lines(base_o[i], base_o[(i + 1) % 4]);
+    for (int i = 0; i < 4; i++)
+        start_drawing_lines(base_o[i], base_o[(i + 1) % 4]);
     start_drawing_lines(teto_o[0], teto_o[1]);
     start_drawing_lines(teto_o[1], teto_o[2]);
     start_drawing_lines(teto_o[2], teto_o[0]);

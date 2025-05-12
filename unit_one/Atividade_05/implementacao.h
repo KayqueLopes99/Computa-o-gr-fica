@@ -13,6 +13,10 @@ typedef struct
     float x, y;
 } Ponto;
 
+// Para rotação em 3d
+typedef struct {
+    float x, y, z;
+} Ponto3D;
 
 // Funções para manipulação da imagem
 void initialize_image(int r, int g, int b);

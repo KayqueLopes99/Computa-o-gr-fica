@@ -1,47 +1,36 @@
-/**
- * \file wireframe.c
- *
- * \brief Implementação do arquivo principal de renderização do modelo 3D.
- *
- * \author
- * Petrucio Ricardo Tavares de Medeiros \n
- * Universidade Federal Rural do Semi-Árido \n
- * Departamento de Engenharias e Tecnologia \n
- * petrucio at ufersa (dot) edu (dot) br
- *
- * \version 1.0
- * \date May 2025
- */
-
 #include "model.h"
 #include <stdio.h>
+
 int main()
 {
     printf("Iniciando o programa...\n");
+
     Vertex vertices[MAX_VERTICES];
     Face faces[MAX_FACES];
     int vcount, fcount;
-    set_pixel(100, 100, 255, 0, 0); // Um pixel vermelho
+    int angulo = 0;
 
-    clr();
-
-    // Lê o arquivo OBJ enviado
-    printf("Iniciando o programa...\n");
-
-    if (!load_obj("models/wolf.obj", vertices, &vcount, faces, &fcount))
+    set_pixel(100, 100, 255, 0, 0); 
+    clr();  
+    if (!load_obj("models/drone.obj", vertices, &vcount, faces, &fcount))
     {
         printf("Erro ao carregar o OBJ\n");
         return 1;
     }
 
-    printf("Modelo carregado: %d vértices, %d faces\n", vcount, fcount);
+    printf("Modelo carregado: %d vertices, %d faces\n", vcount, fcount);
 
-    clr();
-    render_faces(vertices, faces, vcount, fcount);
+    Vertex centro = {0.0f, 0.0f, 0.0f}; 
+    float sx = 0.5f, sy = 0.5f, sz = 0.5f; 
+    
+    apply_transformations(vertices, vcount, centro, sx, sy, sz, 'z', angulo, 0);
 
-    printf("Renderização finalizada.\n");
+    clr();  
+    render_faces(vertices, faces, vcount, fcount);  
 
-    save();
+    printf("Renderizacao finalizada.\n");
+
+    save(); 
 
     return 0;
 }

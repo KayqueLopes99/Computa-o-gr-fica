@@ -34,7 +34,7 @@ void set_pixel(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 void draw_line(int x0, int y0, int x1, int y1)
 {
     for (float t = 0.0; t < 1.0; t = t + 0.0001)
-        set_pixel((int)x0 + (x1 - x0) * t, (int)y0 + (y1 - y0) * t, 0, 0, 0);
+        set_pixel((int)x0 + (x1 - x0) * t, (int)y0 + (y1 - y0) * t, 30, 240, 255);
 }
 
 void clr()
@@ -42,7 +42,7 @@ void clr()
     for (int i = 0; i < WIDTH; i++)
         for (int j = 0; j < HEIGHT; j++)
             for (int c = 0; c < 3; c++)
-                image[i][j][c] = 255;
+                image[i][j][c] = 0;
 }
 
 void save()
