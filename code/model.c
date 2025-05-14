@@ -32,9 +32,10 @@ void set_pixel(int x, int y, unsigned char r, unsigned char g, unsigned char b)
     }
 }
 
-void draw_line(int x0, int y0, int x1, int y1) {
-  for (float t = 0.0; t < 1.0; t = t + 0.0001)
-    set_pixel((int)x0+(x1-x0)*t, (int)y0+(y1-y0)*t, 55, 50, 255);
+void draw_line(int x0, int y0, int x1, int y1)
+{
+    for (float t = 0.0; t < 1.0; t = t + 0.0001)
+        set_pixel((int)x0 + (x1 - x0) * t, (int)y0 + (y1 - y0) * t, 55, 50, 255);
 }
 
 void clr()
@@ -54,8 +55,10 @@ void save()
         return;
     }
     fprintf(fp, "P3\n%d %d\n255\n", WIDTH, HEIGHT);
-    for(int i = 0; i < WIDTH; i++){
-    for(int j = 0; j < HEIGHT; j++){
+    for (int i = 0; i < WIDTH; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
             for (int c = 0; c < 3; c++)
             {
                 fprintf(fp, "%d ", image[i][j][c]);
@@ -115,16 +118,23 @@ int load_obj(const char *filename, Vertex *vertices, int *vcount, Face *faces,
     return 1;
 }
 
-void resizing( Vertex v0, Vertex v1 ){
-  int x0 = (int)((v0.x + 1.0f) * WIDTH / 2.0f);
-  int y0 = (int)((1.0f - v0.y) * HEIGHT / 2.0f);
-  int x1 = (int)((v1.x + 1.0f) * WIDTH / 2.0f);
-  int y1 = (int)((1.0f - v1.y) * HEIGHT / 2.0f);
+void resizing(Vertex v0, Vertex v1, float dx, float dy)
+{
+    // Aplica o deslocamento no espaço normalizado [-1,1]
+    v0.x += dx;
+    v0.y += dy;
+    v1.x += dx;
+    v1.y += dy;
 
-  draw_line(x0, y0, x1, y1);
+    int x0 = (int)((v0.x + 1.0f) * WIDTH / 2.0f);
+    int y0 = (int)((1.0f - v0.y) * HEIGHT / 2.0f);
+    int x1 = (int)((v1.x + 1.0f) * WIDTH / 2.0f);
+    int y1 = (int)((1.0f - v1.y) * HEIGHT / 2.0f);
+
+    draw_line(x0, y0, x1, y1);
 }
 
-void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount)
+void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount, float dx, float dy)
 {
     for (int i = 0; i < fcount; i++)
     {
@@ -133,8 +143,10 @@ void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount)
         {
             Vertex v0 = vertices[face.verts[j] - 1];
             Vertex v1 = vertices[face.verts[(j + 1) % face.n] - 1];
-            resizing(v0, v1);
-        }}}
+            resizing(v0, v1, dx, dy);
+        }
+    }
+}
 
 Vertex apply_scale(Vertex p, Vertex centro, float sx, float sy, float sz)
 {
@@ -195,12 +207,12 @@ Vertex apply_rotation(Vertex p, Vertex centro, int angulo, char eixo)
     return result;
 }
 
-Vertex apply_reflection(Vertex p, int p1, int p2, int p3, Vertex centro)
+Vertex apply_reflection(Vertex p, int p1, int p2, int p3)
 {
     Vertex refletido;
-    refletido.x = centro.x + (p.x - centro.x) * p1;
-    refletido.y = centro.y + (p.y - centro.y) * p2;
-    refletido.z = centro.z + (p.z - centro.z) * p3;
+    refletido.x = p.x * p1;
+    refletido.y = p.y * p2;
+    refletido.z = p.z * p3;
     return refletido;
 }
 
@@ -214,13 +226,55 @@ Vertex shear(Vertex p, float s_x)
 
     return result;
 }
-void apply_transformations(Vertex *vertices, int vcount, Vertex centro, float sx, float sy, float sz, char eixo_rotacao, int angulo, float s_x) {
-    for (int i = 0; i < vcount; i++) {
-        vertices[i] = apply_scale(vertices[i], centro, sx, sy, sz);
-        vertices[i] = apply_rotation(vertices[i], centro, angulo, eixo_rotacao);
-        vertices[i] = apply_reflection(vertices[i], -1, 1, 1, centro);
-        vertices[i] = apply_reflection(vertices[i], 1, -1, 1, centro);
-        vertices[i] = apply_reflection(vertices[i], 1, 1, -1, centro);
-        vertices[i] = shear(vertices[i], s_x);
+
+void apply_transformations(Vertex *original, int vcount, Face *faces, int fcount,
+                           Vertex centro, float sx, float sy, float sz,
+                           char eixo_rotacao, int angulo, float s_x)
+{
+    // Passo 1: Translada para origem
+    for (int i = 0; i < vcount; i++)
+    {
+        original[i].x -= centro.x;
+        original[i].y -= centro.y;
+        original[i].z -= centro.z;
+    }
+
+    // Passo 2: Aplica escala, rotação e cisalhamento
+    for (int i = 0; i < vcount; i++)
+    {
+        original[i] = apply_scale(original[i], (Vertex){0, 0, 0}, sx, sy, sz);
+        original[i] = apply_rotation(original[i], (Vertex){0, 0, 0}, angulo, eixo_rotacao);
+        original[i] = shear(original[i], s_x);
+    }
+
+    // Reflexões para cada figura
+    int reflexoes[4][3] = {
+        {1, 1, 1},  // Original
+        {-1, 1, 1}, // Reflexão em X
+        {1, -1, 1}, // Reflexão em Y
+        {-1, -1, 1} // Reflexão em X e Y
+    };
+
+    // Deslocamentos para posicionar nos 4 quadrantes
+    Vertex deslocamentos[4] = {
+        {-0.5f, 0.5f, 0.0f},  // Q1 centro
+        {0.5f, 0.5f, 0.0f},   // Q2 centro
+        {-0.5f, -0.5f, 0.0f}, // Q3 centro
+        {0.5f, -0.5f, 0.0f}   // Q4 centro
+    };
+
+    for (int r = 0; r < 4; r++)
+    {
+        Vertex transformado[vcount];
+
+        for (int i = 0; i < vcount; i++)
+        {
+            Vertex v = original[i];
+            v = apply_reflection(v, reflexoes[r][0], reflexoes[r][1], reflexoes[r][2]);
+            transformado[i] = v;
+        }
+
+        render_faces(transformado, faces, vcount, fcount,
+                     deslocamentos[r].x, deslocamentos[r].y);
     }
 }

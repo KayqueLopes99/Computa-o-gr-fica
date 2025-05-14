@@ -16,8 +16,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#define WIDTH 800
-#define HEIGHT 800
+#define WIDTH 1000
+#define HEIGHT 1000
 #define MAX_VERTICES 14000
 #define MAX_FACES 14000
 #define MAX_FACE_VERTS 32
@@ -37,8 +37,12 @@ void clr();
 void save();
 void draw_line(int x0, int y0, int x1, int y1);
 int load_obj(const char *filename, Vertex *vertices, int *vcount, Face *faces, int *fcount);
-void resizing( Vertex v0, Vertex v1 );
-void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount);
-void apply_transformations(Vertex *vertices, int vcount, Vertex centro, float sx, float sy, float sz, char eixo, int angulo, float s_x);
+void resizing(Vertex v0, Vertex v1, float dx, float dy);
+void render_faces(Vertex *vertices, Face *faces, int vcount, int fcount, float dx, float dy);
+void apply_transformations(Vertex *original, int vcount, Face *faces, int fcount, Vertex centro, 
+                           float sx, float sy, float sz, 
+                           char eixo_rotacao, int angulo, 
+                           float s_x);
+                           
 Vertex apply_scale(Vertex p, Vertex centro, float sx, float sy, float sz);
 #endif

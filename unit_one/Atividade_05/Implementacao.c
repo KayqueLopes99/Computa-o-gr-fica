@@ -72,6 +72,7 @@ Ponto apply_scale(Ponto p, Ponto centro, float sx, float sy)
 
 Ponto3D rotation3D(Ponto3D p, Ponto3D centro, int angulo, char eixo)
 {
+
     Ponto3D result;
     float rad = -angulo * PI / 180.0;
 

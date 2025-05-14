@@ -12,6 +12,7 @@ int main()
 
     set_pixel(100, 100, 255, 0, 0); 
     clr();  
+
     if (!load_obj("models/drone.obj", vertices, &vcount, faces, &fcount))
     {
         printf("Erro ao carregar o OBJ\n");
@@ -22,11 +23,9 @@ int main()
 
     Vertex centro = {0.0f, 0.0f, 0.0f}; 
     float sx = 0.5f, sy = 0.5f, sz = 0.5f; 
-    
-    apply_transformations(vertices, vcount, centro, sx, sy, sz, 'z', angulo, 0);
 
-    clr();  
-    render_faces(vertices, faces, vcount, fcount);  
+    // Esta função já renderiza os modelos nos quadrantes
+    apply_transformations(vertices, vcount, faces, fcount, centro, sx, sy, sz, 'z', angulo, 0);
 
     printf("Renderizacao finalizada.\n");
 
