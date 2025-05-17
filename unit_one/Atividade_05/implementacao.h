@@ -31,6 +31,7 @@ void start_drawing_lines(Ponto p1, Ponto p2);
 Ponto apply_scale(Ponto p, Ponto centro, float sx, float sy);
 Ponto rotation(Ponto p, Ponto centro, int angulo);
 Ponto reflection(Ponto p, int p1, int p2, Ponto centro);
+Ponto translation_2d(Ponto p, Ponto deslocamento, char operador);
 
 // Função para desenhar a imagem com cores, escalas, rotações e reflexões
 void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsigned char b, Ponto centro, float sx, float sy, int angulo, int s_x);

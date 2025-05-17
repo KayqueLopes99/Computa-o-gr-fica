@@ -58,17 +58,48 @@ void start_drawing_lines(Ponto p1, Ponto p2)
 Ponto apply_scale(Ponto p, Ponto centro, float sx, float sy)
 {
     Ponto result;
-    float x = p.x - centro.x;
-    float y = p.y - centro.y;
 
-    float x1 = sx * x;
-    float y1 = sy * y;
+    // Translada ponto para a origem
+    Ponto ponto_na_origem = translation_2d(p, centro, '-');
 
-    result.x = x1 + centro.x;
-    result.y = y1 + centro.y;
+    // Aplica a escala
+    float x1 = sx * ponto_na_origem.x;
+    float y1 = sy * ponto_na_origem.y;
+
+    result.x = x1;
+    result.y = y1;
+
+    // Translada de volta ao centro
+    result = translation_2d(result, centro, '+');
 
     return result;
 }
+
+
+
+
+Ponto translation_2d(Ponto p, Ponto deslocamento, char operador) {
+    Ponto result;
+
+    if (operador == '+') {
+        result.x = p.x + deslocamento.x;
+        result.y = p.y + deslocamento.y;
+    } else if (operador == '-') {
+        result.x = p.x - deslocamento.x;
+        result.y = p.y - deslocamento.y;
+    } else {
+        // Operador inválido: retorna o ponto original
+        result = p;
+    }
+
+    return result;
+}
+
+
+
+
+
+
 
 Ponto3D rotation3D(Ponto3D p, Ponto3D centro, int angulo, char eixo)
 {
@@ -130,6 +161,12 @@ Ponto shear(Ponto p, float s_x)
 
     return result;
 }
+
+
+
+
+
+
 
 void draw_image_with_colors(Ponto origem, unsigned char r, unsigned char g, unsigned char b, Ponto centro, float sx, float sy, int angulo, int s_x)
 {

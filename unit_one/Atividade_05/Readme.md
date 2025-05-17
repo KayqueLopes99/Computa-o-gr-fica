@@ -109,15 +109,11 @@ Ponto reflection(Ponto p, Ponto p1, Ponto p2);
 Ponto shear(Ponto p, float s_x);
 ```
 
-
-
-
-
-
-
-
-
-
+### **translation_2d**
+- Translada cada ponto da um determinado local, auxiliando na escala da figura.
+```c
+Ponto translation_2d(Ponto p, Ponto deslocamento, char operador);
+```
 
 
 ### **draw_image_with_colors**
